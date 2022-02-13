@@ -8,6 +8,8 @@ require('dotenv').config();
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+const connect           = require('./connect');
+const mongoose          = require('mongoose')
 
 const app = express();
 
@@ -24,11 +26,20 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
+connect()
+let Schema = mongoose.Schema({
+  comments: [String, {required: true}],
+  title: {type: String, required: true},
+  commentcount: Number  
+})
+
+let Books = mongoose.model("Titles", Schema)
+
 //For FCC testing purposes
 fccTestingRoutes(app);
 
 //Routing for API 
-apiRoutes(app);  
+apiRoutes(app, Books);  
     
 //404 Not Found Middleware
 app.use(function(req, res, next) {
